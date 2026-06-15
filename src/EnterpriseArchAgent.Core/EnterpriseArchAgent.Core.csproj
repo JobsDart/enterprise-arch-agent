@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    CORE PROJECT
+    ============
+    Domain model, the agent catalogue (what each agent is and how it thinks),
+    the orchestration logic, and the abstractions the Infrastructure layer
+    implements. No external dependencies — the multi-agent *design* lives here,
+    independent of which agent runtime executes it.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

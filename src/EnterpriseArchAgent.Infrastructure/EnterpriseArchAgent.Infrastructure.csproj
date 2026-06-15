@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    INFRASTRUCTURE PROJECT
+    ======================
+    The only project that knows about the Microsoft Agent Framework and Azure OpenAI.
+    Implements IAgentRunner by creating MAF agents from an Azure OpenAI chat client.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Microsoft Agent Framework (GA) + its OpenAI/Azure OpenAI integration -->
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.10.0" />
+    <!-- Azure OpenAI client (AzureOpenAIClient) — not pulled transitively by the above. -->
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EnterpriseArchAgent.Core\EnterpriseArchAgent.Core.csproj" />
+  </ItemGroup>
+
+</Project>

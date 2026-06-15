@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EnterpriseArchAgent.Api/EnterpriseArchAgent.Api.csproj" />
+    <Project Path="src/EnterpriseArchAgent.Core/EnterpriseArchAgent.Core.csproj" />
+    <Project Path="src/EnterpriseArchAgent.Infrastructure/EnterpriseArchAgent.Infrastructure.csproj" />
+  </Folder>
+</Solution>

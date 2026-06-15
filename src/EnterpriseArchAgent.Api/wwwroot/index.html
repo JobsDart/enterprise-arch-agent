@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enterprise Architecture Agent — JobsDart</title>
+  <style>
+    :root { --bg:#0f172a; --panel:#1e293b; --accent:#a78bfa; --text:#e2e8f0; --muted:#94a3b8; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
+    header { padding:24px 32px; border-bottom:1px solid #334155; }
+    header h1 { margin:0; font-size:20px; }
+    header p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    main { max-width:1000px; margin:0 auto; padding:24px 32px 64px; }
+    .card { background:var(--panel); border:1px solid #334155; border-radius:12px; padding:20px; margin-bottom:20px; }
+    textarea, input { width:100%; background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px; padding:10px; font:inherit; }
+    textarea { min-height:90px; resize:vertical; }
+    label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+    button { background:var(--accent); color:#1e1b4b; border:none; padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; margin-top:14px; }
+    button:disabled { opacity:.5; cursor:wait; }
+    .agents { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .agent { font-size:12px; padding:4px 10px; border-radius:999px; background:#0b1220; border:1px solid #334155; color:var(--muted); }
+    .agent.done { border-color:var(--accent); color:var(--accent); }
+    details { background:#0b1220; border:1px solid #334155; border-radius:8px; margin:10px 0; }
+    summary { cursor:pointer; padding:12px 14px; font-weight:600; }
+    pre { white-space:pre-wrap; word-wrap:break-word; padding:0 14px 14px; margin:0; font-size:13px; line-height:1.5; }
+    .toolbar { display:flex; gap:10px; }
+    .toolbar button { background:#334155; color:var(--text); }
+    .muted { color:var(--muted); font-size:13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧠 Enterprise Architecture Agent</h1>
+    <p>Describe a system → five specialist agents (Requirements · Architecture · Security · ADRs · Cost)
+       collaborate to produce a complete design package. Built on the Microsoft Agent Framework + Azure OpenAI.
+       &nbsp;|&nbsp; <a href="/openapi/v1.json" style="color:var(--accent)">API spec</a></p>
+  </header>
+  <main>
+    <section class="card">
+      <label>What do you want to design?</label>
+      <textarea id="brief" placeholder="e.g. Design a real-time order management system for a B2B retailer with 500 concurrent users."></textarea>
+      <label>Constraints (optional)</label>
+      <input id="constraints" placeholder="e.g. Must run on Azure, GDPR-compliant, team of 6, budget-conscious." />
+      <div class="agents" id="agents"></div>
+      <button id="go">Generate architecture package</button>
+      <span class="muted" id="status"></span>
+    </section>
+
+    <section class="card" id="result" style="display:none">
+      <div class="toolbar">
+        <button id="copyMd">Copy full Markdown</button>
+        <button id="downloadMd">Download .md</button>
+      </div>
+      <div id="sections"></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const AGENTS = ["Requirements","Architecture","Security","ADRs","Cost"];
+    let lastMarkdown = "";
+
+    function renderAgents(activeIndex) {
+      $('agents').innerHTML = AGENTS.map((a,i) =>
+        `<span class="agent ${i < activeIndex ? 'done':''}">${i+1}. ${a}</span>`).join('');
+    }
+    renderAgents(0);
+
+    $('go').onclick = async () => {
+      const brief = $('brief').value.trim();
+      if (!brief) { $('status').textContent = 'Enter a brief first.'; return; }
+      const btn = $('go'); btn.disabled = true;
+      $('status').textContent = 'Running 5 agents… this takes ~20–40s.';
+      renderAgents(0);
+      try {
+        const res = await fetch('/api/architectures', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ brief, constraints: $('constraints').value.trim() || null })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const pkg = await res.json();
+        lastMarkdown = pkg.combinedMarkdown;
+        renderAgents(AGENTS.length);
+        $('result').style.display = 'block';
+        $('sections').innerHTML = pkg.sections.map((s,i) =>
+          `<details ${i===1?'open':''}>
+             <summary>${s.title} <span class="muted">· ${s.role}</span></summary>
+             <pre>${escapeHtml(s.content)}</pre>
+           </details>`).join('');
+        $('status').textContent = '✓ Done.';
+      } catch (e) {
+        $('status').textContent = '✗ ' + e.message;
+      } finally { btn.disabled = false; }
+    };
+
+    $('copyMd').onclick = () => navigator.clipboard.writeText(lastMarkdown)
+      .then(() => $('status').textContent = 'Copied Markdown to clipboard.');
+    $('downloadMd').onclick = () => {
+      const blob = new Blob([lastMarkdown], {type:'text/markdown'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'architecture-package.md'; a.click();
+    };
+
+    function escapeHtml(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+  </script>
+</body>
+</html>
