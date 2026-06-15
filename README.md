@@ -11,6 +11,8 @@
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green">
 </p>
 
+> **▶ Live demo:** https://arch-agent.happywave-99507ff3.swedencentral.azurecontainerapps.io — type a one-line system brief and watch the five agents produce an architecture package. First load may take ~20s while it scales from zero.
+
 ---
 
 ## What problem does it solve?
