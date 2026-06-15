@@ -9,6 +9,7 @@
   <img alt="Microsoft Agent Framework" src="https://img.shields.io/badge/Microsoft%20Agent%20Framework-1.10-7B2FBE">
   <img alt="Azure OpenAI" src="https://img.shields.io/badge/Azure%20OpenAI-GPT--4o-0089D6">
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green">
+  <a href="https://github.com/JobsDart/enterprise-arch-agent/actions"><img alt="Build" src="https://github.com/JobsDart/enterprise-arch-agent/actions/workflows/build-image.yaml/badge.svg"></a>
 </p>
 
 > **▶ Live demo:** https://arch-agent.happywave-99507ff3.swedencentral.azurecontainerapps.io — type a one-line system brief and watch the five agents produce an architecture package. First load may take ~20s while it scales from zero.
